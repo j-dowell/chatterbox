@@ -10,6 +10,7 @@ class App extends Component {
     super(props);
 
     this.messageGenerator = this.messageGenerator.bind(this);
+    this.onUserChange = this.onUserChange.bind(this);
     this.onChange = this.onChange.bind(this);
     this.keyPress = this.keyPress.bind(this);
 
@@ -30,7 +31,11 @@ class App extends Component {
     this.socket.send(JSON.stringify(newMessage));     
   }
 
-  
+  onUserChange(e) {
+    this.setState({
+      currentUser: {name : e.target.value}
+    })
+  }
 
   // Setting state equal to input textbox value
   onChange(e) {
@@ -71,6 +76,7 @@ class App extends Component {
           value={ this.state.value }
           onKeyPress={ this.keyPress } 
           onChange={ this.onChange} 
+          onUserChange={ this.onUserChange} 
           messageGenerator={ this.messageGenerator } 
           currentUser={ this.state.currentUser }
         />
