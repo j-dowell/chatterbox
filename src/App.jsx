@@ -4,12 +4,17 @@ import ChatBar from './ChatBar.jsx';
 import generateRandomId from './helper.js';
 
 
-
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.messageGenerator = this.messageGenerator.bind(this);
+    this.logValue = this.logValue.bind(this);
+    this.keyPress = this.keyPress.bind(this);
+
     this.state = {
       currentUser: {name: "Bob"},
+      value: '',
       messages: [
         {
           username: "Bob",
@@ -25,12 +30,40 @@ class App extends Component {
     }
   }
 
+  messageGenerator() {
+    const newMessage = {
+      id: generateRandomId(), 
+      username: this.state.currentUser.name, 
+      content: this.state.value
+    };
+    const messages = this.state.messages.concat(newMessage);
+    this.setState({
+      messages: messages, 
+      value: ''}) // adding message, resetting form input value
+  }
+
+  onChange(e) {
+      this.setState({
+        value: e.target.value
+      })
+  }
+
+  keyPress(e) {
+    if (e.key === 'Enter') {
+      this.messageGenerator()
+    }
+  }
+
   componentDidMount() {
     console.log("componentDidMount <App />");
     setTimeout(() => {
       console.log("Simulating incoming message");
       // Add a new message to the list of messages in the data store
-      const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
+      const newMessage = {
+        id: 3, 
+        username: "Michelle", 
+        content: "Hello there!"
+      };
       const messages = this.state.messages.concat(newMessage)
       // Update the state of the app component.
       // Calling setState will trigger a call to render() in App and all child components.
@@ -46,7 +79,13 @@ class App extends Component {
           <a href="/" className="navbar-brand">Chatty</a>
         </nav>
         <MessageList messages={this.state.messages}/>
-        <ChatBar currentUser={this.state.currentUser}/>
+        <ChatBar 
+        value={this.state.value}
+        onKeyPress={this.keyPress} 
+        onChange={this.onChange} 
+        messageGenerator={this.messageGenerator} 
+        currentUser={this.state.currentUser}
+        />
       </div>
     );
   }
