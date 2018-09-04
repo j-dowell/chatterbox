@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Message from './Message.jsx';
+import Notification from './Notification.jsx';
 
 class MessageList extends Component {
   render() {
@@ -10,9 +11,7 @@ class MessageList extends Component {
     return (
       <main className="messages">
         <div>{listitems}</div>
-        <div className="message system">
-          Anonymous1 changed their name to nomnom.
-        </div>
+        <Notification />
       </main>
       
     )

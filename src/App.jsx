@@ -9,7 +9,7 @@ class App extends Component {
     super(props);
 
     this.messageGenerator = this.messageGenerator.bind(this);
-    this.logValue = this.logValue.bind(this);
+    this.onChange = this.onChange.bind(this);
     this.keyPress = this.keyPress.bind(this);
 
     this.state = {
@@ -30,6 +30,7 @@ class App extends Component {
     }
   }
 
+
   messageGenerator() {
     const newMessage = {
       id: generateRandomId(), 
@@ -37,11 +38,14 @@ class App extends Component {
       content: this.state.value
     };
     const messages = this.state.messages.concat(newMessage);
+    // Adding message to state, resetting form input value
     this.setState({
       messages: messages, 
-      value: ''}) // adding message, resetting form input value
+      value: ''
+    }) 
   }
 
+  // Setting state equal to input textbox value
   onChange(e) {
       this.setState({
         value: e.target.value
@@ -49,7 +53,8 @@ class App extends Component {
   }
 
   keyPress(e) {
-    if (e.key === 'Enter') {
+    // Call messageGenerator when 'Enter' key (charcode 13) is input
+    if (e.charCode === 13) { 
       this.messageGenerator()
     }
   }
@@ -78,13 +83,13 @@ class App extends Component {
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
         </nav>
-        <MessageList messages={this.state.messages}/>
+        <MessageList messages={ this.state.messages }/>
         <ChatBar 
-        value={this.state.value}
-        onKeyPress={this.keyPress} 
-        onChange={this.onChange} 
-        messageGenerator={this.messageGenerator} 
-        currentUser={this.state.currentUser}
+          value={ this.state.value }
+          onKeyPress={ this.keyPress } 
+          onChange={ this.onChange} 
+          messageGenerator={ this.messageGenerator } 
+          currentUser={ this.state.currentUser }
         />
       </div>
     );
