@@ -32,6 +32,7 @@ class App extends Component {
 
 
   messageGenerator() {
+  
     const newMessage = {
       id: generateRandomId(), 
       username: this.state.currentUser.name, 
@@ -42,7 +43,8 @@ class App extends Component {
     this.setState({
       messages: messages, 
       value: ''
-    }) 
+    })
+    this.socket.send(JSON.stringify(newMessage)); 
   }
 
   // Setting state equal to input textbox value
@@ -60,6 +62,11 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.socket = new WebSocket('ws://localhost:3001/');
+    this.socket.onopen = function(event) {
+      console.log('Connected to server!')
+    };
+
     console.log("componentDidMount <App />");
     setTimeout(() => {
       console.log("Simulating incoming message");
@@ -75,7 +82,7 @@ class App extends Component {
       this.setState({messages: messages})
     }, 3000);
   }
-  
+
 
   render() {
     return (
