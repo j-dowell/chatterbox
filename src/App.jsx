@@ -4,6 +4,7 @@ import ChatBar from './ChatBar.jsx';
 import generateRandomId from './helper.js';
 
 
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -12,40 +13,24 @@ class App extends Component {
     this.onChange = this.onChange.bind(this);
     this.keyPress = this.keyPress.bind(this);
 
+
     this.state = {
       currentUser: {name: "Bob"},
       value: '',
-      messages: [
-        {
-          username: "Bob",
-          content: "Has anyone seen my marbles?",
-          id: generateRandomId()
-        },
-        {
-          username: "Anonymous",
-          content: "No, I think you lost them. You lost your marbles Bob. You lost them for good.",
-          id: generateRandomId()
-        }
-      ]
+      messages: []
     }
   }
-
+  
 
   messageGenerator() {
-  
     const newMessage = {
-      id: generateRandomId(), 
       username: this.state.currentUser.name, 
       content: this.state.value
     };
-    const messages = this.state.messages.concat(newMessage);
-    // Adding message to state, resetting form input value
-    this.setState({
-      messages: messages, 
-      value: ''
-    })
-    this.socket.send(JSON.stringify(newMessage)); 
+    this.socket.send(JSON.stringify(newMessage));     
   }
+
+  
 
   // Setting state equal to input textbox value
   onChange(e) {
@@ -63,24 +48,15 @@ class App extends Component {
 
   componentDidMount() {
     this.socket = new WebSocket('ws://localhost:3001/');
-    this.socket.onopen = function(event) {
+    this.socket.onopen = function() {
       console.log('Connected to server!')
     };
-
+    this.socket.onmessage = (event) => {
+      const newMessage = JSON.parse(event.data);
+      const messages = this.state.messages.concat(newMessage);
+      this.setState({ messages: messages, value: '' })
+    }
     console.log("componentDidMount <App />");
-    setTimeout(() => {
-      console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
-      const newMessage = {
-        id: 3, 
-        username: "Michelle", 
-        content: "Hello there!"
-      };
-      const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
   }
 
 
