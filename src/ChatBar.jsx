@@ -10,11 +10,15 @@ class ChatBar extends Component {
   }
 
   onUserChange(event) {
-    this.setState({currentUser: {name: event.target.value}});
+    this.setState({
+      currentUser: {name: event.target.value}
+    });
   }
 
   onMessageChange(event) {
-    this.setState({message: event.target.value})
+    this.setState({
+      message: event.target.value
+    })
   }
 
   onMessageSubmit(event) {
