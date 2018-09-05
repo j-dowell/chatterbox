@@ -20,7 +20,6 @@ const wss = new SocketServer({ server });
 // the ws parameter in the callback.
 
 wss.broadcast = function broadcast(data) {
-  console.log(data);
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(data));
@@ -35,10 +34,9 @@ wss.on('connection', (ws) => {
     type: 'incomingClientSize',
     color: colorList[Math.floor(Math.random() * 4)]
   }
-  console.log(info)
   info.usersOnline = wss.clients.size;
   wss.broadcast(info);
-  console.log('Client connected ', wss.clients.size);
+  console.log('Client connected. Clients currently connected: ', wss.clients.size);
 
   ws.on('message', function incoming(data) {
     let parsedData = JSON.parse(data);
@@ -56,7 +54,7 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     info.usersOnline = wss.clients.size;
     wss.broadcast(info);
-    console.log('Client disconnected', wss.clients.size)
+    console.log('Client disconnected. Clients currently connected:', wss.clients.size)
   });
 
 });

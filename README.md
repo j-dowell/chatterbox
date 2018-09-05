@@ -8,10 +8,11 @@ A multi-user real-time chat app, built with ReactJS and WebSockets.
 
 ### Usage
 
-Install the dependencies, start WebSocket server in chatty_server folder, then start server in main directory.
+Install the dependencies, run WebSocket server in chatty_server folder, then start server in main directory.
 
 ```
 npm install
+node server.js
 npm start
 open http://localhost:3000
 ```
