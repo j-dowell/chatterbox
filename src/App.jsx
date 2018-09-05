@@ -1,55 +1,58 @@
 import React, {Component} from 'react';
 import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
-import generateRandomId from './helper.js';
-
-
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.messageGenerator = this.messageGenerator.bind(this);
-    this.onUserChange = this.onUserChange.bind(this);
-    this.onChange = this.onChange.bind(this);
-    this.keyPress = this.keyPress.bind(this);
-
+    this.notificationGenerator = this.notificationGenerator.bind(this);
+    // this.onKeyPressName = this.onKeyPressName.bind(this);
 
     this.state = {
       currentUser: {name: "Bob"},
       value: '',
-      messages: []
+      messages: [],
+      notifications: []
     }
   }
-  
 
-  messageGenerator() {
+  notificationGenerator(oldUsername, newUserName) {
+    const newNotification = {
+      type: 'postNotification',
+      content: `${oldUsername} changed their name to ${newUserName}`
+    }
+    this.socket.send(JSON.stringify(newNotification));   
+  }
+
+  messageGenerator(user, message) {
     const newMessage = {
-      username: this.state.currentUser.name, 
-      content: this.state.value
+      type: 'postMessage',
+      username: user, 
+      content: message
     };
-    this.socket.send(JSON.stringify(newMessage));     
-  }
-
-  onUserChange(e) {
-    this.setState({
-      currentUser: {name : e.target.value}
-    })
-  }
-
-  // Setting state equal to input textbox value
-  onChange(e) {
-      this.setState({
-        value: e.target.value
-      })
-  }
-
-  keyPress(e) {
-    // Call messageGenerator when 'Enter' key (charcode 13) is input
-    if (e.charCode === 13) { 
-      this.messageGenerator()
+    if (this.state.currentUser.name !== user) {
+      this.notificationGenerator(this.state.currentUser.name, user)
+      this.setState({currentUser: {name: user}})
     }
+    this.socket.send(JSON.stringify(newMessage));   
   }
+
+
+  // onKeyPressName(e) {
+  //   console.log('event target value', e.target.value);
+  //   console.log('current name', this.state.currentUser.name);
+  //   if (e.charCode === 13) {
+  //     const oldUsername = this.state.currentUser.name;
+  //     if (e.target.value !== oldUsername) {
+  //       this.setState({
+  //         currentUser: {name: e.target.value}
+  //       })
+  //       this.notificationGenerator(oldUsername);
+  //     }
+  //   }
+  // }
 
   componentDidMount() {
     this.socket = new WebSocket('ws://localhost:3001/');
@@ -57,13 +60,13 @@ class App extends Component {
       console.log('Connected to server!')
     };
     this.socket.onmessage = (event) => {
-      const newMessage = JSON.parse(event.data);
-      const messages = this.state.messages.concat(newMessage);
+      const data = JSON.parse(event.data);
+      const messages = this.state.messages.concat(data);
       this.setState({ messages: messages, value: '' })
+      
     }
     console.log("componentDidMount <App />");
   }
-
 
   render() {
     return (
@@ -71,13 +74,12 @@ class App extends Component {
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
         </nav>
-        <MessageList messages={ this.state.messages }/>
+        <MessageList 
+        messages={ this.state.messages }
+        notifications={ this.state.notifications }
+        />
         <ChatBar 
-          value={ this.state.value }
-          onKeyPress={ this.keyPress } 
-          onChange={ this.onChange} 
-          onUserChange={ this.onUserChange} 
-          messageGenerator={ this.messageGenerator } 
+          messageGenerator={ this.messageGenerator.bind(this) } 
           currentUser={ this.state.currentUser }
         />
       </div>
