@@ -6,7 +6,7 @@ class MessageList extends Component {
   render() {
     const messages = this.props.messages;
 
-    const listitems = messages.map((message) =>  {
+    const listitems = messages.map((message, index) =>  {
       if (message.type === 'incomingMessage') {
         return (
           <Message 
@@ -17,7 +17,7 @@ class MessageList extends Component {
         )
       } else if (message.type === 'incomingNotification') {
         return (
-          <div className="message system">
+          <div key={ index }className="message system">
             { message.content }
           </div>
         )
