@@ -10,15 +10,15 @@ class MessageList extends Component {
       if (message.type === 'incomingMessage') {
         return (
           <Message 
-            userInfo={this.props.userInfo}
-            key={message.id} 
-            message={message}
+            userInfo={ this.props.userInfo }
+            key={ message.id } 
+            message={ message }
           />
         )
       } else if (message.type === 'incomingNotification') {
         return (
           <div className="message system">
-            {message.content}
+            { message.content }
           </div>
         )
       }
@@ -27,7 +27,7 @@ class MessageList extends Component {
 
     return (
       <main className="messages">
-        <div>{listitems}</div>
+        <div>{ listitems }</div>
       </main>
     )
   }

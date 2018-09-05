@@ -4,23 +4,26 @@ class ChatBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: {name: this.props.currentUser.name},
+      currentUser: { name: this.props.currentUser.name },
       message: ''
     }
   }
 
+  // Tracking username input value
   onUserChange(event) {
     this.setState({
-      currentUser: {name: event.target.value}
+      currentUser: { name: event.target.value }
     });
   }
 
+  // Tracking message input value
   onMessageChange(event) {
     this.setState({
       message: event.target.value
     })
   }
 
+  // On 'Enter' press, submit message and username, then reset message input box value
   onMessageSubmit(event) {
     if(event.charCode === 13) {
       this.props.messageGenerator(this.state.currentUser.name, this.state.message);

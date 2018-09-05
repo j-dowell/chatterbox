@@ -11,13 +11,14 @@ class App extends Component {
     this.notificationGenerator = this.notificationGenerator.bind(this);
 
     this.state = {
-      currentUser: {name: "Bob", color: 'black'},
+      currentUser: {name: "Anonymous", color: 'black'},
       value: '',
       messages: [],
       usersOnline: 0
     }
   }
 
+  // Sending username change notification to server
   notificationGenerator(oldUsername, newUserName) {
     const newNotification = {
       type: 'postNotification',
@@ -26,6 +27,7 @@ class App extends Component {
     this.socket.send(JSON.stringify(newNotification));   
   }
 
+  // Sending user info and message to server
   messageGenerator(user, message) {
     const newMessage = {
       type: 'postMessage',
@@ -33,7 +35,7 @@ class App extends Component {
       content: message,
       color: this.state.currentUser.color
     };
-    // If username has change, send notification 
+    // If username has change, send notification and update state
     if (this.state.currentUser.name !== user) {
       this.notificationGenerator(this.state.currentUser.name, user)
       this.setState(prevState => ({
@@ -42,7 +44,6 @@ class App extends Component {
           name: user
         }
       }))
-      // this.setState({currentUser: {name: user}})
     }
     this.socket.send(JSON.stringify(newMessage));   
   }
@@ -55,6 +56,7 @@ class App extends Component {
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'incomingClientSize') {
+        // Updating state with no. of users online and color assigned from server
         this.setState(prevState => ({
           currentUser: {
             ...prevState.currentUser,
@@ -63,6 +65,7 @@ class App extends Component {
           usersOnline: data.usersOnline
         }))
       }
+      // Updating state with message content 
       const messages = this.state.messages.concat(data);
       this.setState({ messages: messages, value: '' })
       
@@ -75,7 +78,7 @@ class App extends Component {
       <div>
         <NavBar usersOnline={ this.state.usersOnline }/>
         <MessageList 
-          userInfo={this.state.currentUser}
+          userInfo={this.state.currentUser }
           messages={ this.state.messages }
           notifications={ this.state.notifications }
         />
