@@ -28,12 +28,15 @@ wss.broadcast = function broadcast(data) {
   });
 };
 
+const colorList = ['red', 'blue', 'green', 'yellow'];
 
 wss.on('connection', (ws) => {
   let info = {
     type: 'incomingClientSize',
+    color: colorList[Math.floor(Math.random() * 4)]
   }
-  info.usersOnline =  wss.clients.size
+  console.log(info)
+  info.usersOnline = wss.clients.size;
   wss.broadcast(info);
   console.log('Client connected ', wss.clients.size);
 

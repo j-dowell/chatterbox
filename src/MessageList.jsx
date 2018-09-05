@@ -10,6 +10,7 @@ class MessageList extends Component {
       if (message.type === 'incomingMessage') {
         return (
           <Message 
+            userInfo={this.props.userInfo}
             key={message.id} 
             message={message}
           />

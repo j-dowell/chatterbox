@@ -11,7 +11,7 @@ class App extends Component {
     this.notificationGenerator = this.notificationGenerator.bind(this);
 
     this.state = {
-      currentUser: {name: "Bob"},
+      currentUser: {name: "Bob", color: 'black'},
       value: '',
       messages: [],
       usersOnline: 0
@@ -30,12 +30,19 @@ class App extends Component {
     const newMessage = {
       type: 'postMessage',
       username: user, 
-      content: message
+      content: message,
+      color: this.state.currentUser.color
     };
     // If username has change, send notification 
     if (this.state.currentUser.name !== user) {
       this.notificationGenerator(this.state.currentUser.name, user)
-      this.setState({currentUser: {name: user}})
+      this.setState(prevState => ({
+        currentUser: {
+          ...prevState.currentUser,
+          name: user
+        }
+      }))
+      // this.setState({currentUser: {name: user}})
     }
     this.socket.send(JSON.stringify(newMessage));   
   }
@@ -48,7 +55,13 @@ class App extends Component {
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'incomingClientSize') {
-        this.setState({usersOnline: data.usersOnline})
+        this.setState(prevState => ({
+          currentUser: {
+            ...prevState.currentUser,
+            color: data.color,
+          },
+          usersOnline: data.usersOnline
+        }))
       }
       const messages = this.state.messages.concat(data);
       this.setState({ messages: messages, value: '' })
@@ -62,6 +75,7 @@ class App extends Component {
       <div>
         <NavBar usersOnline={ this.state.usersOnline }/>
         <MessageList 
+          userInfo={this.state.currentUser}
           messages={ this.state.messages }
           notifications={ this.state.notifications }
         />
