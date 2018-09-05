@@ -4,7 +4,7 @@ Chatty App
 A multi-user real-time chat app, built with ReactJS and WebSockets.
 
 ### Screenshots
-
+!["App"](https://github.com/j-dowell/chatty/blob/master/docs/chatty_app.gif?raw=true)
 
 ### Usage
 
