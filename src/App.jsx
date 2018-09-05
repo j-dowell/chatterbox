@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
+import NavBar from './NavBar.jsx';
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class App extends Component {
       currentUser: {name: "Bob"},
       value: '',
       messages: [],
+      usersOnline: 0
     }
   }
 
@@ -30,14 +32,14 @@ class App extends Component {
       username: user, 
       content: message
     };
-
+    // If username has change, send notification 
     if (this.state.currentUser.name !== user) {
       this.notificationGenerator(this.state.currentUser.name, user)
       this.setState({currentUser: {name: user}})
     }
     this.socket.send(JSON.stringify(newMessage));   
   }
-
+  
   componentDidMount() {
     this.socket = new WebSocket('ws://localhost:3001/');
     this.socket.onopen = function() {
@@ -45,6 +47,9 @@ class App extends Component {
     };
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      if (data.type === 'incomingClientSize') {
+        this.setState({usersOnline: data.usersOnline})
+      }
       const messages = this.state.messages.concat(data);
       this.setState({ messages: messages, value: '' })
       
@@ -55,12 +60,10 @@ class App extends Component {
   render() {
     return (
       <div>
-        <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty</a>
-        </nav>
+        <NavBar usersOnline={ this.state.usersOnline }/>
         <MessageList 
-        messages={ this.state.messages }
-        notifications={ this.state.notifications }
+          messages={ this.state.messages }
+          notifications={ this.state.notifications }
         />
         <ChatBar 
           messageGenerator={ this.messageGenerator.bind(this) } 
