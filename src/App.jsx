@@ -15,7 +15,7 @@ class App extends Component {
       value: '',
       messages: [],
       usersOnline: 0
-    }
+    };
   }
 
   // Sending username change notification to server
@@ -57,18 +57,21 @@ class App extends Component {
       const data = JSON.parse(event.data);
       if (data.type === 'incomingClientSize') {
         // Updating state with no. of users online and color assigned from server
+        this.setState({usersOnline: data.usersOnline})
+      }
+      // Updating state with message content 
+      const messages = this.state.messages.concat(data);
+      this.setState({ messages: messages, value: '' })
+
+      // If incoming data is color, assign color
+      if (data.type === 'incomingColor') {
         this.setState(prevState => ({
           currentUser: {
             ...prevState.currentUser,
             color: data.color,
           },
-          usersOnline: data.usersOnline
         }))
       }
-      // Updating state with message content 
-      const messages = this.state.messages.concat(data);
-      this.setState({ messages: messages, value: '' })
-      
     }
     console.log("componentDidMount <App />");
   }

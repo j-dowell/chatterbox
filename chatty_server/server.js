@@ -27,34 +27,44 @@ wss.broadcast = function broadcast(data) {
   });
 };
 
+// Color list to choose user color from
 const colorList = ['red', 'blue', 'green', 'yellow'];
 
+// When a client connects
 wss.on('connection', (ws) => {
+  // Assign random color and send to client
+  let color = {
+    type: 'incomingColor',
+    color: colorList[Math.floor(Math.random() * 4)]
+  };
+  ws.send(JSON.stringify(color));
+
+  // Grabbing current client size and broadcasting to clients
   let info = {
     type: 'incomingClientSize',
-    color: colorList[Math.floor(Math.random() * 4)]
-  }
+  };
   info.usersOnline = wss.clients.size;
   wss.broadcast(info);
   console.log('Client connected. Clients currently connected: ', wss.clients.size);
 
+  // Receiving a message
   ws.on('message', function incoming(data) {
     let parsedData = JSON.parse(data);
+
     if (parsedData.type === 'postMessage') {
-      parsedData.id = uuidv1();
+      parsedData.id = uuidv1(); // Assigning random ID
       parsedData.type = 'incomingMessage';
       wss.broadcast(parsedData);
     } else if (parsedData.type === 'postNotification') {
       parsedData.type = 'incomingNotification';
       wss.broadcast(parsedData);
     }
-    
-  })
+  });
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
     info.usersOnline = wss.clients.size;
     wss.broadcast(info);
-    console.log('Client disconnected. Clients currently connected:', wss.clients.size)
+    console.log('Client disconnected. Clients currently connected:', wss.clients.size);
   });
 
 });
