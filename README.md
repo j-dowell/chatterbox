@@ -1,4 +1,4 @@
-Chatty App
+ChatterBox
 =====================
 
 A multi-user real-time chat app, built with ReactJS and WebSockets.
